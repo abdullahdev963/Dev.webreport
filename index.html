@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BAZZ REPORT</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overflow-x: hidden; }
+  body {
+    background: #000; color: #fff; min-height: 100vh;
+    font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+    position: relative; padding: 14px 0 40px;
+  }
+
+  /* starfield */
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 8%, #fff, transparent),
+      radial-gradient(1px 1px at 78% 14%, #fff, transparent),
+      radial-gradient(1.2px 1.2px at 45% 22%, #fff, transparent),
+      radial-gradient(1px 1px at 88% 42%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 20% 55%, #fff, transparent),
+      radial-gradient(1px 1px at 60% 68%, #fff, transparent),
+      radial-gradient(1.3px 1.3px at 30% 82%, #fff, transparent),
+      radial-gradient(1px 1px at 90% 90%, #fff, transparent),
+      radial-gradient(1px 1px at 5% 38%, #fff, transparent),
+      radial-gradient(1px 1px at 72% 78%, #fff, transparent);
+    opacity: .55;
+    animation: twinkle 5s infinite ease-in-out;
+    pointer-events: none; z-index: 0;
+  }
+  @keyframes twinkle { 0%,100%{opacity:.35;} 50%{opacity:.75;} }
+
+  /* ambient red glow */
+  body::after {
+    content: ''; position: fixed;
+    top: -30%; left: 50%; transform: translateX(-50%);
+    width: 120%; height: 60%;
+    background: radial-gradient(ellipse at center top, rgba(255,30,30,.22), transparent 65%);
+    pointer-events: none; z-index: 0;
+    animation: pulse 6s infinite ease-in-out;
+  }
+  @keyframes pulse { 0%,100%{opacity:.7;} 50%{opacity:1;} }
+
+  .wrap { position: relative; z-index: 1; max-width: 460px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---------- BANNER ---------- */
+  .banner {
+    position: relative;
+    border: 2px solid #ff1e1e;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow:
+      0 0 25px rgba(255,30,30,.7),
+      0 0 55px rgba(255,30,30,.35),
+      inset 0 0 25px rgba(255,30,30,.3);
+    animation: bannerGlow 3s infinite ease-in-out;
+  }
+  @keyframes bannerGlow {
+    0%,100% { box-shadow: 0 0 25px rgba(255,30,30,.7), 0 0 55px rgba(255,30,30,.35), inset 0 0 25px rgba(255,30,30,.3); }
+    50% { box-shadow: 0 0 35px rgba(255,30,30,.95), 0 0 80px rgba(255,30,30,.5), inset 0 0 35px rgba(255,30,30,.4); }
+  }
+  .banner img {
+    display: block; width: 100%; height: 190px;
+    object-fit: cover; object-position: center 25%;
+    filter: contrast(1.1) saturate(1.15);
+  }
+  .banner .scan {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(255,30,30,.15) 48%, rgba(255,30,30,.3) 50%, rgba(255,30,30,.15) 52%, transparent 100%);
+    background-size: 100% 30%;
+    animation: scanline 4s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes scanline {
+    0% { background-position: 0 -100%; }
+    100% { background-position: 0 200%; }
+  }
+  .banner .menu {
+    position: absolute; top: 10px; right: 10px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(0,0,0,.6);
+    border: 1.5px solid rgba(255,30,30,.8);
+    display: flex; align-items: center; justify-content: center;
+    color: #ff1e1e; font-size: 18px; cursor: pointer;
+    box-shadow: 0 0 12px rgba(255,30,30,.6);
+    backdrop-filter: blur(4px);
+  }
+
+  /* ---------- TITLE ---------- */
+  h1 {
+    text-align: center;
+    margin: 22px 0 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 30px; font-weight: 900;
+    letter-spacing: 2px;
+    color: #ff1e1e;
+    text-shadow:
+      0 0 10px rgba(255,30,30,1),
+      0 0 22px rgba(255,30,30,.7),
+      0 0 40px rgba(255,30,30,.4);
+    animation: titleFlicker 4s infinite;
+  }
+  @keyframes titleFlicker {
+    0%, 92%, 100% { opacity: 1; }
+    93% { opacity: .6; }
+    94% { opacity: 1; }
+    96% { opacity: .7; }
+    97% { opacity: 1; }
+  }
+  h1 .hand { font-size: 24px; filter: drop-shadow(0 0 8px rgba(255,30,30,.9)); }
+
+  .sub {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: #ff5b5b;
+    line-height: 2;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-shadow: 0 0 8px rgba(255,30,30,.6);
+  }
+
+  /* ---------- TABS ---------- */
+  .tabs {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px; margin-bottom: 16px;
+    background: rgba(20,0,0,.6);
+    border: 1.5px solid rgba(255,30,30,.4);
+    border-radius: 14px; padding: 5px;
+    box-shadow: 0 0 18px rgba(255,30,30,.25);
+  }
+  .tab {
+    padding: 10px 4px; text-align: center;
+    border-radius: 10px;
+    background: transparent; color: #ff5555;
+    font-weight: 700; font-size: 11px;
+    letter-spacing: 1px; cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    transition: all .25s;
+    user-select: none;
+  }
+  .tab.active {
+    background: linear-gradient(180deg, #ff3a3a, #c00);
+    color: #000;
+    box-shadow: 0 0 18px rgba(255,30,30,.9), inset 0 -2px 0 rgba(0,0,0,.3);
+  }
+
+  /* ---------- CARD ---------- */
+  .card {
+    border: 1.5px solid #ff1e1e;
+    border-radius: 22px;
+    padding: 18px;
+    background: linear-gradient(180deg, rgba(30,0,0,.55), rgba(10,0,0,.75));
+    box-shadow:
+      0 0 25px rgba(255,30,30,.45),
+      0 0 60px rgba(255,30,30,.2),
+      inset 0 0 25px rgba(255,30,30,.08);
+    position: relative;
+    backdrop-filter: blur(6px);
+  }
+  .card::before, .card::after {
+    content: ''; position: absolute;
+    width: 22px; height: 22px;
+    border: 2px solid #ff1e1e;
+    filter: drop-shadow(0 0 6px rgba(255,30,30,.8));
+  }
+  .card::before { top: -3px; left: -3px; border-right: none; border-bottom: none; border-top-left-radius: 18px; }
+  .card::after { bottom: -3px; right: -3px; border-left: none; border-top: none; border-bottom-right-radius: 18px; }
+
+  .pane { display: none; }
+  .pane.active { display: block; animation: fadeIn .35s ease; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+  /* ---------- INPUT ---------- */
+  .phone-box {
+    display: flex; align-items: center; gap: 8px;
+    border: 1.5px solid #ff1e1e;
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    background: rgba(0,0,0,.6);
+    box-shadow:
+      inset 0 0 14px rgba(255,30,30,.2),
+      0 0 14px rgba(255,30,30,.3);
+    transition: box-shadow .25s;
+  }
+  .phone-box:focus-within {
+    box-shadow:
+      inset 0 0 20px rgba(255,30,30,.35),
+      0 0 22px rgba(255,30,30,.6);
+  }
+  .phone-box .ico { font-size: 18px; filter: drop-shadow(0 0 6px rgba(255,30,30,.9)); }
+  .phone-box select {
+    background: rgba(255,30,30,.12);
+    color: #ff4444; border: 1px solid rgba(255,30,30,.7);
+    border-radius: 8px; padding: 6px 6px;
+    font-size: 12px; font-weight: 700;
+    outline: none; cursor: pointer;
+    font-family: inherit;
+  }
+  .phone-box select option { background: #160000; color: #fff; }
+  .phone-box input {
+    flex: 1; background: transparent;
+    border: none; outline: none;
+    color: #fff; font-size: 15px;
+    min-width: 0; letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .phone-box input::placeholder { color: #666; letter-spacing: 0; font-weight: 500; }
+
+  /* ---------- REPORT TYPE OPTS ---------- */
+  .opts {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 8px; margin-bottom: 14px;
+  }
+  .opt {
+    border: 1.5px solid #ff1e1e;
+    border-radius: 13px;
+    background: rgba(0,0,0,.55);
+    color: #ff1e1e;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 15px 4px 12px;
+    cursor: pointer; text-align: center;
+    transition: all .2s;
+    box-shadow: 0 0 12px rgba(255,30,30,.3), inset 0 0 12px rgba(255,30,30,.08);
+    font-family: 'Orbitron', sans-serif;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .opt::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent, rgba(255,30,30,.15));
+    opacity: 0; transition: opacity .2s;
+  }
+  .opt.active {
+    background: linear-gradient(180deg, #ff3a3a, #c00);
+    color: #000;
+    box-shadow: 0 0 25px rgba(255,30,30,1), inset 0 -3px 0 rgba(0,0,0,.3);
+    transform: translateY(-1px);
+  }
+  .opt small { display: block; font-size: 15px; margin-top: 4px; }
+  .opt:active { transform: scale(.97); }
+
+  /* ---------- TEXTAREA ---------- */
+  textarea {
+    width: 100%; min-height: 62px;
+    background: rgba(0,0,0,.6);
+    color: #fff;
+    border: 1.5px solid #ff1e1e;
+    border-radius: 13px;
+    padding: 11px 13px;
+    font-family: inherit; font-size: 13px; font-weight: 500;
+    outline: none; resize: vertical;
+    margin-bottom: 14px;
+    box-shadow: inset 0 0 14px rgba(255,30,30,.15);
+    transition: box-shadow .25s;
+  }
+  textarea:focus { box-shadow: inset 0 0 20px rgba(255,30,30,.3), 0 0 14px rgba(255,30,30,.4); }
+  textarea::placeholder { color: #666; }
+
+  /* ---------- BUTTON ---------- */
+  .btn {
+    width: 100%;
+    border: none; border-radius: 15px;
+    padding: 17px;
+    font-size: 16px; font-weight: 800;
+    letter-spacing: 2.5px; color: #000;
+    background: linear-gradient(180deg, #ff3a3a 0%, #d40000 55%, #8a0000 100%);
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    box-shadow:
+      0 0 25px rgba(255,30,30,.9),
+      0 0 45px rgba(255,30,30,.4),
+      inset 0 -3px 0 rgba(0,0,0,.4),
+      inset 0 2px 0 rgba(255,255,255,.2);
+    transition: transform .15s, box-shadow .2s;
+    text-shadow: 0 0 6px rgba(255,255,255,.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: ''; position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+    animation: shine 3s infinite;
+  }
+  @keyframes shine {
+    0% { left: -100%; }
+    55% { left: 100%; }
+    100% { left: 100%; }
+  }
+  .btn:active { transform: scale(.97); box-shadow: 0 0 40px rgba(255,30,30,1), inset 0 -3px 0 rgba(0,0,0,.5); }
+  .btn.ghost {
+    background: transparent; color: #ff1e1e;
+    border: 1.5px solid #ff1e1e;
+    box-shadow: 0 0 15px rgba(255,30,30,.4), inset 0 0 15px rgba(255,30,30,.1);
+    margin-top: 8px; font-size: 12px; padding: 12px;
+    text-shadow: none;
+  }
+  .btn.ghost::before { display: none; }
+  .btn.ghost:active { background: rgba(255,30,30,.15); }
+
+  /* ---------- STATUS ---------- */
+  .status {
+    margin-top: 12px; text-align: center;
+    font-size: 13px; min-height: 18px;
+    color: #ff5555; line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .5px;
+  }
+
+  /* ---------- RESULT ---------- */
+  .result {
+    margin-top: 14px; padding: 16px;
+    border-radius: 14px;
+    border: 1.5px dashed #ff1e1e;
+    background: rgba(255,30,30,.08);
+    box-shadow: 0 0 20px rgba(255,30,30,.25), inset 0 0 20px rgba(255,30,30,.08);
+    text-align: center;
+    display: none;
+  }
+  .result.show { display: block; animation: fadeIn .4s ease; }
+  .result .big {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px; font-weight: 900;
+    margin: 10px 0 6px; letter-spacing: 1.5px;
+  }
+  .result .green { color: #22ee22; text-shadow: 0 0 14px rgba(34,238,34,.9), 0 0 30px rgba(34,238,34,.5); }
+  .result .red { color: #ff3333; text-shadow: 0 0 14px rgba(255,51,51,.9), 0 0 30px rgba(255,51,51,.5); }
+  .result .yellow { color: #ffcc00; text-shadow: 0 0 14px rgba(255,204,0,.9), 0 0 30px rgba(255,204,0,.5); }
+  .result .meta { font-size: 11px; color: #aaa; margin-top: 6px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+
+  /* ---------- HISTORY ---------- */
+  .hist-item {
+    border: 1px solid rgba(255,30,30,.5);
+    border-radius: 12px;
+    padding: 11px 13px;
+    margin-bottom: 8px;
+    font-size: 12.5px;
+    background: rgba(0,0,0,.55);
+    line-height: 1.6;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 8px;
+    box-shadow: 0 0 10px rgba(255,30,30,.2);
+    animation: fadeIn .3s;
+  }
+  .hist-item .left { flex: 1; }
+  .hist-item b { color: #ff5555; letter-spacing: 1px; font-family: 'Orbitron', sans-serif; font-size: 11px; }
+  .hist-item .del {
+    color: #ff3333; cursor: pointer;
+    font-size: 16px; padding: 0 4px;
+    user-select: none; font-weight: 800;
+    text-shadow: 0 0 8px rgba(255,51,51,.8);
+  }
+  .hist-item .del:hover { color: #fff; }
+  .empty {
+    text-align: center; color: #888;
+    font-size: 13px; padding: 30px 0;
+    letter-spacing: 1px;
+  }
+
+  /* ---------- DISCLAIMER ---------- */
+  .disc {
+    margin-top: 18px;
+    font-size: 10.5px;
+    color: #ff8a8a;
+    text-align: center;
+    line-height: 1.75;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(255,30,30,.06);
+    border: 1px solid rgba(255,30,30,.28);
+    letter-spacing: .3px;
+  }
+
+  /* ---------- LOADER ---------- */
+  .loader {
+    display: inline-block;
+    width: 13px; height: 13px;
+    border: 2px solid #ff1e1e;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    vertical-align: middle;
+    margin-right: 7px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="banner">
+    <div class="menu">☰</div>
+    <img src="https://i.imgur.com/8Km9tLL.png" alt="BAZZ">
+    <div class="scan"></div>
+  </div>
+
+  <h1>BAZZ REPORT <span class="hand">🖐️</span></h1>
+  <div class="sub">Submit Report<br>Incident Details</div>
+
+  <div class="tabs">
+    <div class="tab active" data-pane="report">📩 REPORT</div>
+    <div class="tab" data-pane="check">🔍 BAN</div>
+    <div class="tab" data-pane="hist">📜 LOG</div>
+  </div>
+
+  <div class="card">
+
+    <!-- REPORT PANE -->
+    <div class="pane active" id="pane-report">
+      <div class="phone-box">
+        <span class="ico">📞</span>
+        <select id="cc">
+          <option value="92">🇵🇰 +92</option>
+          <option value="91">🇮🇳 +91</option>
+          <option value="971">🇦🇪 +971</option>
+          <option value="966">🇸🇦 +966</option>
+          <option value="44">🇬🇧 +44</option>
+          <option value="1">🇺🇸 +1</option>
+          <option value="62">🇮🇩 +62</option>
+          <option value="60">🇲🇾 +60</option>
+          <option value="880">🇧🇩 +880</option>
+          <option value="90">🇹🇷 +90</option>
+          <option value="7">🇷🇺 +7</option>
+          <option value="49">🇩🇪 +49</option>
+          <option value="33">🇫🇷 +33</option>
+          <option value="20">🇪🇬 +20</option>
+          <option value="234">🇳🇬 +234</option>
+        </select>
+        <input id="phone" type="tel" placeholder="Enter phone number" inputmode="numeric" autocomplete="off">
+      </div>
+
+      <div class="opts">
+        <div class="opt" data-v="ABUSE">ABUSE<small>🛡️</small></div>
+        <div class="opt" data-v="SCAM">SCAM<small>⚠️</small></div>
+        <div class="opt" data-v="SPAM">SPAM<small>❌</small></div>
+      </div>
+
+      <textarea id="details" placeholder="Extra details (optional)..."></textarea>
+
+      <button class="btn" id="sendBtn">ENVOYER 📩</button>
+      <div class="status" id="status"></div>
+    </div>
+
+    <!-- BAN CHECK PANE -->
+    <div class="pane" id="pane-check">
+      <div class="phone-box">
+        <span class="ico">🔎</span>
+        <select id="ccCheck">
+          <option value="92">🇵🇰 +92</option>
+          <option value="91">🇮🇳 +91</option>
+          <option value="971">🇦🇪 +971</option>
+          <option value="966">🇸🇦 +966</option>
+          <option value="44">🇬🇧 +44</option>
+          <option value="1">🇺🇸 +1</option>
+          <option value="62">🇮🇩 +62</option>
+          <option value="60">🇲🇾 +60</option>
+          <option value="880">🇧🇩 +880</option>
+          <option value="90">🇹🇷 +90</option>
+        </select>
+        <input id="checkPhone" type="tel" placeholder="Enter phone number" inputmode="numeric" autocomplete="off">
+      </div>
+
+      <button class="btn" id="checkBtn">CHECK BAN 🚨</button>
+      <div class="status" id="checkStatus"></div>
+
+      <div class="result" id="checkResult">
+        <div class="meta">Status</div>
+        <div class="big" id="resBig">—</div>
+        <div class="meta" id="resMeta">—</div>
+        <button class="btn ghost" id="openWa" style="display:none;">OPEN WHATSAPP →</button>
+      </div>
+    </div>
+
+    <!-- HISTORY PANE -->
+    <div class="pane" id="pane-hist">
+      <div id="histList"></div>
+      <button class="btn ghost" id="clearHist">CLEAR LOG 🗑️</button>
+    </div>
+
+    <div class="disc">
+      ⚠️ Disclaimer: This tool is for educational purposes only.<br>
+      We do not guarantee the banning of any account and are not responsible for any consequences that may arise from using this service.<br>
+      Use at your own risk.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ---------- Tabs ----------
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('pane-' + t.dataset.pane).classList.add('active');
+      if (t.dataset.pane === 'hist') renderHistory();
+    });
+  });
+
+  const digits = s => (s || '').replace(/\D/g, '');
+  const fullNumber = (ccId, inputId) => {
+    const cc = document.getElementById(ccId).value;
+    let n = digits(document.getElementById(inputId).value).replace(/^0+/, '');
+    return cc + n;
+  };
+
+  // ---------- Report ----------
+  let picked = null;
+  document.querySelectorAll('.opt').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.opt').forEach(o => o.classList.remove('active'));
+      el.classList.add('active');
+      picked = el.dataset.v;
+    });
+  });
+
+  function saveHistory(entry) {
+    const arr = JSON.parse(localStorage.getItem('bazz_history') || '[]');
+    arr.unshift(entry);
+    localStorage.setItem('bazz_history', JSON.stringify(arr.slice(0, 50)));
+  }
+
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    const status = document.getElementById('status');
+    const num = digits(document.getElementById('phone').value);
+
+    if (!num || num.length < 6) { status.textContent = 'Sahi number likho.'; return; }
+    if (!picked) { status.textContent = 'Type chuno: ABUSE, SCAM ya SPAM.'; return; }
+
+    const full = fullNumber('cc', 'phone');
+    const details = document.getElementById('details').value.trim();
+
+    status.innerHTML = '<span class="loader"></span>Report tayyar ho raha hai...';
+
+    setTimeout(() => {
+      saveHistory({
+        phone: full, type: picked, details,
+        time: new Date().toLocaleString()
+      });
+
+      const body = encodeURIComponent(
+        `Report Type: ${picked}\n` +
+        `Reported Number: +${full}\n` +
+        `Details: ${details || 'N/A'}\n` +
+        `Date: ${new Date().toLocaleString()}\n\n` +
+        `Please review this account for violations of WhatsApp Terms of Service.`
+      );
+      const mail = `mailto:support@whatsapp.com?subject=${encodeURIComponent('Report ' + picked + ' — +' + full)}&body=${body}`;
+
+      status.innerHTML = `✅ Report darj — ${picked} — +${full}`;
+
+      setTimeout(() => { window.location.href = mail; }, 500);
+
+      document.getElementById('phone').value = '';
+      document.getElementById('details').value = '';
+      document.querySelectorAll('.opt').forEach(o => o.classList.remove('active'));
+      picked = null;
+    }, 700);
+  });
+
+  // ---------- Ban Checker ----------
+  document.getElementById('checkBtn').addEventListener('click', async () => {
+    const num = digits(document.getElementById('checkPhone').value);
+    const st = document.getElementById('checkStatus');
+    const box = document.getElementById('checkResult');
+    const big = document.getElementById('resBig');
+    const meta = document.getElementById('resMeta');
+    const openWa = document.getElementById('openWa');
+
+    if (!num || num.length < 6) { st.textContent = 'Sahi number likho.'; box.classList.remove('show'); return; }
+
+    const full = fullNumber('ccCheck', 'checkPhone');
+    st.innerHTML = '<span class="loader"></span>Check ho raha hai...';
+    box.classList.remove('show');
+    openWa.style.display = 'none';
+
+    try {
+      const r = await fetch(`/api/check?phone=${encodeURIComponent(full)}`);
+      const data = await r.json();
+      if (data.error) throw new Error(data.error);
+
+      st.textContent = '';
+      box.classList.add('show');
+
+      if (data.status === 'registered') {
+        big.textContent = '✅ ACTIVE';
+        big.className = 'big green';
+        meta.textContent = `On WhatsApp • +${data.phone}`;
+      } else if (data.status === 'not_registered') {
+        big.textContent = '❌ NOT ON WHATSAPP';
+        big.className = 'big red';
+        meta.textContent = `Banned or not registered • +${data.phone}`;
+      } else {
+        big.textContent = '⚠️ UNKNOWN';
+        big.className = 'big yellow';
+        meta.textContent = `Check failed • +${data.phone}`;
+      }
+
+      openWa.style.display = 'block';
+      openWa.onclick = () => window.open(`https://wa.me/${data.phone}`, '_blank');
+    } catch (e) {
+      st.textContent = '❌ Error: ' + e.message;
+    }
+  });
+
+  // ---------- History ----------
+  function renderHistory() {
+    const box = document.getElementById('histList');
+    const arr = JSON.parse(localStorage.getItem('bazz_history') || '[]');
+    if (!arr.length) { box.innerHTML = '<div class="empty">No reports yet.</div>'; return; }
+    box.innerHTML = arr.map((e, i) => `
+      <div class="hist-item">
+        <div class="left">
+          <b>${e.type}</b> — +${e.phone}<br>
+          <span style="color:#888;">${e.time}</span>
+          ${e.details ? '<br><span style="color:#ccc;">' + e.details + '</span>' : ''}
+        </div>
+        <div class="del" data-i="${i}">✕</div>
+      </div>
+    `).join('');
+    box.querySelectorAll('.del').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.dataset.i);
+        const a = JSON.parse(localStorage.getItem('bazz_history') || '[]');
+        a.splice(i, 1);
+        localStorage.setItem('bazz_history', JSON.stringify(a));
+        renderHistory();
+      });
+    });
+  }
+
+  document.getElementById('clearHist').addEventListener('click', () => {
+    if (confirm('Sari history mita dein?')) {
+      localStorage.removeItem('bazz_history');
+      renderHistory();
+    }
+  });
+</script>
+</body>
+</html>
